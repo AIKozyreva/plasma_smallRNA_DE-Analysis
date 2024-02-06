@@ -1,0 +1,43 @@
+1. UMI-preprocessing for Single-end processing
+fumi_tools copy_umi --threads 10 --umi-length 12 -i reads.fastq.gz -o reads_w_umi.fastq.gz
+
+2. Trimming 
+The command removes the UMI, A-tail, template switch motif and adapters sequences from all reads and discard reads which result shorter than 15 bases (these are considered too short to be included in the analysis). The trimming command can be applied on the input raw files (reads.fastq.gz) coming directly from the sequencer or alternatively, on the UMI pre-processed files (reads_w_umi.fastq.gz) if the UMIs are of interest.
+cutadapt --trim-n --match-read-wildcards -u 16 -n 4 –a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -a GAACTCCAGTCAC -e 0.2 --nextseq-trim 20 -m 15 –o trimmed_reads.fastq.gz raw_reads_w_umi.fastq.gz
+
+3. Alignment 
+The example command below shows how to run STAR on the trimmed reads data. We assume we are dealing with a human sample, that reads were sequenced at 50 bases long and that we want to use 10 CPUs. Please adapt the read length if it is longer than 50 bp and change the hg19 genome if your samples are not human.
+STAR --runThreadN 10 --readFilesCommand zcat --genomeDir /genomes/hg19/ --sjdbGTFfile /genomes/hg19/hg19.gtf --sjdbOverhang 49 --readFilesIn trimmed_reads.fastq.gz --quantMode TranscriptomeSAM --quantTranscriptomeBAMcompression -1 --outSAMtype BAM SortedByCoordinate --outSAMunmapped Within --outFileNamePrefix ./MySample_
+
+4. Deduplication based on UMIs (optional)
+To remove duplicates from the genome alignment, no sorting is needed before UMI deduplication. However, to remove duplicates from the transcriptome alignment output, since the alignments are not sorted, please use samtools command provided below before UMI deduplication:
+samtools sort -@ 10 -o MySample_Aligned.toTranscriptome.sorted.out.bam MySample_Aligned. toTranscriptome.out.bam
+
+Now you can deduplicate both the genome and the transcriptome alignment with the UMI deduplication command of fumi-tools called dedup:
+fumi_tools dedup --threads 10 --memory 10G -i MySample_Aligned.toTranscriptome.sorted.out.bam -o MySample_deduplicated_transcriptome.bam
+
+5. Counting
+The required input files for MGcount are a .txt file listing the paths to the alignment input files (.bam format) and the annotations file (.gtf format). The output directory path has to be provided as an input as well.
+Example command:
+MGcount -T 2 --gtf Homo_sapiens.GRCh38.gtf --outdir outputs --bam_infiles input_bamfilenames.txt
+
+MGcount provides the choice to enable/disable the quantification of all RNA biotypes included in the annotation file in the form of "communities" as optional parameters for small-RNA (--ml_flag_small) and long-RNA (--ml_flag_long). Both are enabled by default.
+
+The main output of MGcount is the count_matrix.csv file containing an expression matrix that can be imported to R or any other software for downstream analyses. A full user guide for MGCount is available here:
+https://filedn.com/lTnUWxFTA93JTyX3Hvbdn2h/mgcount/UserGuide.html
+
+**
+Other standard counting tools such as featureCounts or HTSeq-counts can
+also be used alternatively. Given the high complexity of D-Plex libraries,
+we recommend having a clear understanding of the scientific question
+and the goal of the project before proceeding to the choice of the counting
+method as this will strongly impact downstream analyses.
+
+Notice that D-Plex produces forward-stranded data. Stranded libraries
+have the benefit that reads map to the genome strand where they were
+originated from. Therefore, when estimating transcript expression, reads
+aligned to the forward strand should be assigned only to transcript features
+in the forward strand whereas reads aligned to the reverse strand should
+be assigned only to transcript features in the reverse strand. For this,
+make sure you select “stranded mode” in any tool of choice. Stranded
+mode is selected by default in MGcount.
