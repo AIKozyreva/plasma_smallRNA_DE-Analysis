@@ -2,20 +2,20 @@
 #this programm will for each sample run the STAR alignmnt, create a subfolder with sample-like name with alignment output
 
 # input_dir-were you store files for processing
-input_dir="/mnt/projects/users/aalayeva/smallRNA/trimmed"
+input_dir="/mnt/projects/users/..."
 
 #were you want to have subfolders with alignment output
-output_base_dir="/mnt/projects/users/aalayeva/smallRNA/smRNA_STAR_RESULT"
+output_base_dir="/mnt/projects/users/..."
 
 #were star-indexed and other ref files are stored
-genome_dir="~/ref_human_38/star_index_h38"
-gtf_file="~/ref_human_38/gencode.v45.primary_assembly.basic.annotation.gtf"
+genome_dir="mnt/projects/users/ref_human/..."
+gtf_file="mnt/projects/users/ref_human/.../*your_ref_file*.gtf"
 
 #set sjdb_overhang parameter as *length_read*-1 
 sjdb_overhang=49
 
-#give to the program bunch of input-file names
-files_to_process=("7scamt_w_UMI_trimmed.fastq" "8scamt_w_UMI_trimmed.fastq" "9scamt_w_UMI_trimmed.fastq" "scamt1_w_UMI_trimmed.fastq" "22scamt_w_UMI_trimmed.fastq")
+#give to the program bunch of input-file names. this part can be optionally automized also
+files_to_process=("1s.fastq" "2s.fastq" "3s.fastq" "4s.fastq" "5s.fastq")
 
 for file in "${files_to_process[@]}"; do
 
