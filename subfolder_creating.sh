@@ -1,5 +1,5 @@
 #!/bin/bash
-#this programm will for each sample create a subfolder with sample-like name with results of alignment by STAR
+#this programm will for each sample run the STAR alignmnt, create a subfolder with sample-like name with alignment output
 
 # input_dir-were you store files for processing
 input_dir="/mnt/projects/users/aalayeva/smallRNA/trimmed"
