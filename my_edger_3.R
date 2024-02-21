@@ -2,9 +2,12 @@
 
 library(edgeR)
 
-count_file <- "/mnt/projects/users/aalayeva/smallRNA/smRNA_STAR_RESULT/aligned_deduplicated/featureCounts_results/optional/count_edited_matrix_toGenome.txt"
+count_file <- "/mnt/projects/usersfeatureCounts_results/count_matrix_toGenome.txt"
 count_data <- read.table(count_file, header = TRUE, stringsAsFactors = FALSE, sep = "\t")
 
+print(ncol(count_data))
+
+#here we will take columns 7-18 as experimental data and 19-30 as norm data.
 gene_id <- count_data$Geneid
 samples_normal <- count_data[, c(7:18)]
 samples_experiment <- count_data[, c(19:30)]
@@ -20,8 +23,8 @@ fit <- glmQLFit(dge_list, design_matrix)
 contrast <- makeContrasts(groupExperiment - groupNormal, levels = colnames(design_matrix))
 qlf <- glmQLFTest(fit, contrast = contrast)
 
-results <- topTags(qlf, n = Inf)
-#print(results)
+results <- topTags(qlf, n = 25)
+
 # Save all results to a file
 write.table(results$table, file = "EDGER_full_results.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
