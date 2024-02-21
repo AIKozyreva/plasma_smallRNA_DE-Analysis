@@ -3,12 +3,15 @@
 #Please, run this script in the folder, where you store yout input .bam files
 
 # Set the path to the annotation file
-annotation_file="/mnt/projects/users/aalayeva/ref_human_38/gencode.v45.primary_assembly.basic.annotation.gtf"
+annotation_file="/mnt/projects/users/ref_human/.../.gtf"
 
 # Set the path to the result directory
-result_dir="/mnt/projects/users/aalayeva/smallRNA/smRNA_STAR_RESULT/aligned_deduplicated/featureCounts_results"
+result_dir="/mnt/projects/users/aligned_deduplicated/featureCounts_results"
 
-# Loop through each sample from 2 to 24
+# Loop through each sample from 2 to 24. Here my samples had a different counts (2to24) in prefix and "rez" in the end
+#so i ask program to go through all files, wich names has "2rez" pattern in the name.
+# and the next line add to this pattern many other words, which form real my input-files name.
+
 for i in {2..24}; do
     sample_name="${i}scamt"
     genome_input_file="${sample_name}_w_UMI_trimmed_deduplicated_Aligned.toGenome.SortByCoord.bam"
