@@ -1,0 +1,15 @@
+Command for making process for several files one by one automatically:
+
+commands.txt will be made for every tool separately by creating_commands.py or it called something like that (that's my personal script)
+
+less ./path-to-file/commands.txt | -xargs -I {} -P *nuumber of threads* sh -c "{}"
+Where commands.txt is the file, were you store the command + path to file for separate sample. Information for each new sample should be stored on new line without any other additional symbols
+
+find . -type d -name "*STARtmp*" -exec rm -r {} + 
+This command can help you to delete objects, which have "something" pattern in the name. On my example it will delete all folders with STARtmp anywhere in the name. If you want to look through and delete files, you have to change -d into -f parameter.
+
+find ./STAR_alignment2 -type f -name "*sortedByCoord.out.bam" -exec realpath {} \; > create_FC_command.txt
+Thic command will find all files .bam from STAR and wrire in one-in-line per another in .txt
+
+featureCounts -a /mnt/users/.../gencode.v45.annotation.gtf -o ./FCountRes/counts_matrix2.txt $(cat create_FC_command.txt)
+This command will run FC for all files from create_FC_command.txt in one (create one common count matrix for all). in .txt i have file per line, but "cat" will give it to program one by one, separated by space. 
